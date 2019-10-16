@@ -23,7 +23,7 @@ set(SRC_GUI_RAPTOR
         src/gui/gui.hpp
         src/gui/internal/ellipseShape.hpp
         src/lib/utf/utf.hpp
-        src/gui/core/unicode.hpp
+        src/core/unicode.hpp
         src/gui/core/patterns/PatternTextInfo.hpp)
 set(TEST_GUI_RAPTOR
         other/test/gui/src/test.cpp
@@ -39,7 +39,7 @@ set(SRC_VIDEO_RAPTOR
         src/video/core/HWDevices.hpp
         src/video/core/Stream.hpp
         src/video/core/ThumbnailContext.hpp
-        src/video/core/unicode.hpp
+        src/core/unicode.hpp
         src/video/core/utils.hpp
         src/video/core/Video.hpp
         src/video/core/VideoInfo.hpp

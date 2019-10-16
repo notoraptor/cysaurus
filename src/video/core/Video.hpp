@@ -13,7 +13,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <lib/lodepng/lodepng.h>
 #include "utils.hpp"
-#include "unicode.hpp"
+#include <core/unicode.hpp>
 #include "Stream.hpp"
 #include "ThumbnailContext.hpp"
 #include "VideoInfo.hpp"

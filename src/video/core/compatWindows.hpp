@@ -14,7 +14,7 @@ extern "C" {
 #include <ostream>
 #include <vector>
 #include "FileHandle.hpp"
-#include "unicode.hpp"
+#include <core/unicode.hpp>
 #include "VideoInfo.hpp"
 
 inline bool fileSize(const char* filename, size_t* out) {

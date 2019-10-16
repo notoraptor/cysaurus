@@ -7,7 +7,7 @@
 #include "complexPatterns.hpp"
 #include <gui/core/patterns/PatternTextInfo.hpp>
 #include <gui/internal/ellipseShape.hpp>
-#include <gui/core/unicode.hpp>
+#include <core/unicode.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <iostream>
