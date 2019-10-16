@@ -31,7 +31,8 @@
 *.out
 *.app
 
+# Folders
 /.idea
-/cmake-build-release
-/cmake-build-debug
+/cmake-build-*
 /SFML-2.5.1
+/.local
