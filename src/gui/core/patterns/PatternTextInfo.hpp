@@ -6,7 +6,7 @@
 #define GUIRAPTOR_PATTERNTEXTINFO_HPP
 
 #include <iostream>
-#include <core/patterns/simplePatterns.hpp>
+#include <gui/core/patterns/simplePatterns.hpp>
 
 struct PatternTextInfo {
 	size_t length;

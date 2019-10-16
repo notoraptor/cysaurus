@@ -2,9 +2,9 @@
 // Created by notoraptor on 19-09-09.
 //
 
-#include <core/core.hpp>
+#include "core/core.hpp"
+#include "gui.hpp"
 #include <iostream>
-#include "guiRaptor.hpp"
 
 Window* WindowNew(unsigned int width, unsigned int height, const char* title) {
 	return new Window(width, height, title);

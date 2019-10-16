@@ -2,12 +2,12 @@
 // Created by notoraptor on 19-09-13.
 //
 
-#include <core/core.hpp>
+#include <gui/core/core.hpp>
 #include "simplePatterns.hpp"
 #include "complexPatterns.hpp"
-#include <core/patterns/PatternTextInfo.hpp>
-#include <internal/ellipseShape.hpp>
-#include <core/unicode.hpp>
+#include <gui/core/patterns/PatternTextInfo.hpp>
+#include <gui/internal/ellipseShape.hpp>
+#include <gui/core/unicode.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstring>
 #include <iostream>

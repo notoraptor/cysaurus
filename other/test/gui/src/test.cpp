@@ -3,11 +3,11 @@
 //
 
 #include <iostream>
-#include <core/core.hpp>
-#include <guiRaptor.hpp>
-#include <core/patterns/simplePatterns.hpp>
-#include <core/patterns/complexPatterns.hpp>
-#include <core/patterns/_wrappers.hpp>
+#include <gui/core/core.hpp>
+#include <gui/gui.hpp>
+#include <gui/core/patterns/simplePatterns.hpp>
+#include <gui/core/patterns/complexPatterns.hpp>
+#include "_wrappers.hpp"
 
 int main() {
 	PatternImage di1{0, 0, -1, -1, "tigre.jpg"};

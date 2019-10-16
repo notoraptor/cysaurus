@@ -5,8 +5,8 @@
 #ifndef GUIRAPTOR_SIMPLEPATTERNS_HPP
 #define GUIRAPTOR_SIMPLEPATTERNS_HPP
 
-#include <core/patterns/DrawingType.hpp>
-#include <core/patterns/Pattern.hpp>
+#include <gui/core/patterns/DrawingType.hpp>
+#include <gui/core/patterns/Pattern.hpp>
 
 struct PatternText {
 	float x;

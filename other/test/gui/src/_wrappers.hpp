@@ -5,10 +5,10 @@
 #ifndef GUIRAPTOR__WRAPPERS_HPP
 #define GUIRAPTOR__WRAPPERS_HPP
 
-#include <core/patterns/Pattern.hpp>
-#include <core/patterns/DrawingType.hpp>
-#include <core/patterns/simplePatterns.hpp>
-#include <core/patterns/complexPatterns.hpp>
+#include <gui/core/patterns/Pattern.hpp>
+#include <gui/core/patterns/DrawingType.hpp>
+#include <gui/core/patterns/simplePatterns.hpp>
+#include <gui/core/patterns/complexPatterns.hpp>
 
 #define PATTERN_WRAPPER(patternType, className) inline Pattern wrapPattern(const className& o) {return {patternType, (void*)&o};}
 

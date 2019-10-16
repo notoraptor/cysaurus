@@ -5,8 +5,8 @@
 #ifndef GUIRAPTOR_COMPLEXPATTERNS_HPP
 #define GUIRAPTOR_COMPLEXPATTERNS_HPP
 
-#include <core/patterns/DrawingType.hpp>
-#include <core/patterns/Pattern.hpp>
+#include <gui/core/patterns/DrawingType.hpp>
+#include <gui/core/patterns/Pattern.hpp>
 
 struct PatternCircle {
 	float x;
