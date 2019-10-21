@@ -23,7 +23,7 @@ extern "C" {
 #include "compatWindows.hpp"
 #endif
 
-#define THUMBNAIL_SIZE 250
+#define THUMBNAIL_SIZE 300
 
 class Video {
 	FileHandle fileHandle;
