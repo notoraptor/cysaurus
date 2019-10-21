@@ -95,7 +95,11 @@ void printVideoRaptorInfo() {
 
 int main(int n, char* args[]) {
 	printVideoRaptorInfo();
-	for (int i = 1; i < n; ++i)
-		testDetails(args[i]);
+	for (int i = 1; i < n; ++i) {
+		std::ostringstream oss;
+		oss << i;
+		auto thumbName = oss.str();
+		test(args[i], thumbName.c_str());
+	}
 	return EXIT_SUCCESS;
 }
