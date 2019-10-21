@@ -73,6 +73,7 @@ PatternTextInfo::PatternTextInfo(const PatternText& patternText) {
 	this->height = bounds.height;
 	this->left = x;
 	this->top = y;
+	this->coordinates = nullptr;
 	if (size) {
 		this->coordinates = new float[2 * length];
 		for (size_t i = 0; i < size; ++i) {

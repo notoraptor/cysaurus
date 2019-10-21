@@ -18,7 +18,7 @@ struct PatternTextInfo {
 
 	explicit PatternTextInfo(const PatternText& patternText);
 	~PatternTextInfo() {
-		delete coordinates;
+		delete[] coordinates;
 		std::cout << "destroyed a pattern text info" << std::endl;
 	}
 };
