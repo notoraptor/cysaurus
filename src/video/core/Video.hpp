@@ -136,7 +136,7 @@ public:
 			return VideoReport_error(report, ERROR_SEEK_VIDEO);
 
 		// Read frames and save first video frame as image to disk
-		while (av_read_frame(format, &thCtx.packet) >= 0) {
+		while (thCtx.readFrame(format) >= 0) {
 			// Is this a packet from the video stream?
 			if (thCtx.packet.stream_index == videoStream.index) {
 				// Send packet

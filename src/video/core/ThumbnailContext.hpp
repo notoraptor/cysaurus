@@ -23,7 +23,7 @@ struct ThumbnailContext {
 	ThumbnailContext(): tmpFrame(nullptr), frame(nullptr), swFrame(nullptr), frameRGB(nullptr), buffer(nullptr),
 						swsContext(nullptr), packet(), packetIsUsed(false) {}
 
-	~ThumbnailContext() {
+	void clear() {
 		if (packetIsUsed)
 			av_packet_unref(&packet);
 		if (frame)
@@ -36,6 +36,16 @@ struct ThumbnailContext {
 			av_freep(&buffer);
 		if (swsContext)
 			sws_freeContext(swsContext);
+	}
+
+	int readFrame(AVFormatContext* format) {
+		clear();
+		packetIsUsed = true;
+		return av_read_frame(format, &packet);
+	}
+
+	~ThumbnailContext() {
+		clear();
 	}
 
 };
