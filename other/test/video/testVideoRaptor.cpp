@@ -4,17 +4,21 @@
 #include <video/core/ErrorReader.hpp>
 
 void printDetails(VideoInfo* videoDetails) {
-	std::cout << "BEGIN DETAILS" << std::endl;
+	std::cout << "VIDEO" << std::endl;
 	if (videoDetails->filename)
 		std::cout << "\tfilename          : " << videoDetails->filename << std::endl;
 	if (videoDetails->title)
 		std::cout << "\ttitle             : " << videoDetails->title << std::endl;
 	if (videoDetails->container_format)
 		std::cout << "\tcontainer_format  : " << videoDetails->container_format << std::endl;
-	if (videoDetails->audio_codec)
-		std::cout << "\taudio_codec       : " << videoDetails->audio_codec << std::endl;
 	if (videoDetails->video_codec)
 		std::cout << "\tvideo_codec       : " << videoDetails->video_codec << std::endl;
+	if (videoDetails->video_codec_description)
+		std::cout << "\tvideo_codec_desc  : " << videoDetails->video_codec_description << std::endl;
+	if (videoDetails->audio_codec)
+		std::cout << "\taudio_codec       : " << videoDetails->audio_codec << std::endl;
+	if (videoDetails->audio_codec_description)
+		std::cout << "\taudio_codec_desc  : " << videoDetails->audio_codec_description << std::endl;
 	std::cout << "\twidth             : " << videoDetails->width << std::endl;
 	std::cout << "\theight            : " << videoDetails->height << std::endl;
 	std::cout << "\tframe_rate_num    : " << videoDetails->frame_rate_num << std::endl;
@@ -24,7 +28,14 @@ void printDetails(VideoInfo* videoDetails) {
 	std::cout << "\tsize              : " << videoDetails->size << std::endl;
 	std::cout << "\tsample_rate       : " << videoDetails->sample_rate << std::endl;
 	std::cout << "\taudio_bit_rate    : " << videoDetails->audio_bit_rate << std::endl;
-	std::cout << "END DETAILS" << std::endl;
+	if (videoDetails->report.errors && !VideoReport_isDone(&videoDetails->report)) {
+		ErrorReader errorReader{};
+		ErrorReader_init(&errorReader, videoDetails->report.errors);
+		std::cout << "\terrors:" << std::endl;
+		while (const char* errorString = ErrorReader_next(&errorReader)) {
+			std::cout << "\t\t" << errorString << std::endl;
+		}
+	}
 }
 
 bool testDetails(const char* filename) {
