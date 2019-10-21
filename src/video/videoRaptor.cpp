@@ -66,13 +66,13 @@ int videoRaptorThumbnails(int length, VideoThumbnail** pVideoThumbnail) {
 	int countLoaded = 0;
 	for (int i = 0; i < length; ++i) {
 		VideoThumbnail* videoThumbnail = pVideoThumbnail[i];
-		if (videoThumbnail
-			&& videoThumbnail->filename
-			&& videoThumbnail->thumbnailFolder
-			&& videoThumbnail->thumbnailName
-			&& workOnVideo(*devices, videoThumbnail->filename, &videoThumbnail->report, videoThumbnail,
-						   videoWorkerForThumbnail))
-			++countLoaded;
+		countLoaded += (videoThumbnail
+						&& videoThumbnail->filename
+						&& videoThumbnail->thumbnailFolder
+						&& videoThumbnail->thumbnailName
+						&& workOnVideo(*devices, videoThumbnail->filename,
+								&videoThumbnail->report, videoThumbnail,
+								videoWorkerForThumbnail));
 	}
 	return countLoaded;
 }
@@ -84,10 +84,10 @@ int videoRaptorDetails(int length, VideoInfo** pVideoInfo) {
 	int countLoaded = 0;
 	for (int i = 0; i < length; ++i) {
 		VideoInfo* videoDetails = pVideoInfo[i];
-		if (videoDetails
-			&& videoDetails->filename
-			&& workOnVideo(*devices, videoDetails->filename, &videoDetails->report, videoDetails, videoWorkerForInfo))
-			++countLoaded;
+		countLoaded += (videoDetails
+						&& videoDetails->filename
+						&& workOnVideo(*devices, videoDetails->filename,
+								&videoDetails->report, videoDetails, videoWorkerForInfo));
 	}
 	return countLoaded;
 }

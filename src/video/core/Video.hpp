@@ -23,7 +23,7 @@ extern "C" {
 #include "compatWindows.hpp"
 #endif
 
-#define THUMBNAIL_SIZE 300
+#define THUMBNAIL_SIZE 250
 
 class Video {
 	FileHandle fileHandle;
@@ -36,9 +36,9 @@ class Video {
 	bool loadInputFile() {
 #ifdef WIN32
 		// Windows.
-		return openCustomFormatContext(fileHandle, &format, &avioContext, report);
+		return (avformat_open_input(&format, fileHandle.filename, NULL, NULL) == 0
+		|| openCustomFormatContext(fileHandle, &format, &avioContext, report));
 #else
-		// Unix. TODO Test.
 		if (avformat_open_input(&format, fileHandle.filename, NULL, NULL) != 0)
 			return VideoReport_error(report, ERROR_OPEN_FILE);
 		return true;

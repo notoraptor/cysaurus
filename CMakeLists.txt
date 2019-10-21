@@ -25,9 +25,6 @@ set(SRC_GUI_RAPTOR
         src/lib/utf/utf.hpp
         src/core/unicode.hpp
         src/gui/core/patterns/PatternTextInfo.hpp)
-set(TEST_GUI_RAPTOR
-        other/test/gui/src/test.cpp
-        other/test/gui/src/_wrappers.hpp)
 set(SRC_VIDEO_RAPTOR
         src/alignment/alignment.cpp
         src/alignment/alignment.hpp
@@ -51,6 +48,13 @@ set(SRC_VIDEO_RAPTOR
         src/lib/utf/utf.hpp
         src/video/videoRaptor.cpp
         src/video/videoRaptor.hpp)
+set(TEST_GUI_RAPTOR
+        other/test/gui/src/test.cpp
+        other/test/gui/src/_wrappers.hpp)
+set(TEST_HARDWARE_ACCELERATION
+        other/test/hardware_acceleration/hwaccel.c)
+set(TEST_VIDEO_RAPTOR
+        other/test/video/testVideoRaptor.cpp)
 
 add_library(guiRaptor MODULE ${SRC_GUI_RAPTOR})
 target_link_libraries(guiRaptor sfml-graphics sfml-window sfml-system)
@@ -61,6 +65,13 @@ install(TARGETS guiRaptor LIBRARY DESTINATION $ENV{BIN_PATH})
 
 add_executable(testGui ${SRC_GUI_RAPTOR} ${TEST_GUI_RAPTOR})
 target_link_libraries(testGui sfml-graphics sfml-window sfml-system)
+
+add_executable(hwaccel ${TEST_HARDWARE_ACCELERATION})
+target_link_libraries(hwaccel avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+
+add_executable(testVideoRaptor ${TEST_VIDEO_RAPTOR} ${SRC_VIDEO_RAPTOR})
+target_link_libraries(testVideoRaptor avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+
 
 add_library(videoRaptorBatch MODULE ${SRC_VIDEO_RAPTOR})
 target_link_libraries(videoRaptorBatch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
