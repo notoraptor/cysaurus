@@ -15,7 +15,8 @@
 #define OTHER_SEPARATOR '\\'
 #endif
 
-#define PIXEL_FMT AV_PIX_FMT_RGBA
+#define PIXEL_FMT AV_PIX_FMT_RGB24
+#define BYTES_PER_PIXEL 3
 
 inline char* copyString(const char* initialString) {
     size_t stringLength = strlen(initialString);

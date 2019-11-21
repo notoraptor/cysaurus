@@ -76,16 +76,16 @@ class Video {
 	}
 
 	bool savePNG(AVFrame* pFrame, const char* thFolder, const char* thName) {
-		std::vector<unsigned char> image((size_t) (pFrame->width * pFrame->height * 4));
+		std::vector<unsigned char> image((size_t) (pFrame->width * pFrame->height * BYTES_PER_PIXEL));
 
 		// Write pixel data
 		for (int y = 0; y < pFrame->height; ++y)
-			memcpy(image.data() + (4 * pFrame->width * y), pFrame->data[0] + y * pFrame->linesize[0],
-					(size_t)pFrame->width * 4);
+			memcpy(image.data() + (BYTES_PER_PIXEL * pFrame->width * y), pFrame->data[0] + y * pFrame->linesize[0],
+					(size_t)pFrame->width * BYTES_PER_PIXEL);
 
 		unsigned ret = lodepng::encode(
 				generateThumbnailPath(thFolder, thName), image, (unsigned int) pFrame->width,
-				(unsigned int) pFrame->height);
+				(unsigned int) pFrame->height, LCT_RGB);
 		if (ret)
 			return VideoReport_error(report, ERROR_PNG_ENCODER, lodepng_error_text(ret));
 
