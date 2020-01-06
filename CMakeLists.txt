@@ -5,8 +5,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 
 project(cysaurus VERSION 0.0.1 DESCRIPTION "C/C++ utilities with a C interface for easy integration (e.g. in Python).")
 include_directories(src)
+include_directories($ENV{CPATH})
+link_directories($ENV{LIBRARY_PATH})
 
 set(SRC_GUI_RAPTOR
+        src/core/unicode.hpp
         src/gui/core/core.cpp
         src/gui/core/core.hpp
         src/gui/core/Event.hpp
@@ -14,6 +17,7 @@ set(SRC_GUI_RAPTOR
         src/gui/core/patterns/DrawingType.hpp
         src/gui/core/patterns/Pattern.hpp
         src/gui/core/patterns/patterns.cpp
+        src/gui/core/patterns/PatternTextInfo.hpp
         src/gui/core/patterns/simplePatterns.hpp
         src/gui/core/Window.hpp
         src/gui/fonts/monospace.cpp
@@ -23,8 +27,7 @@ set(SRC_GUI_RAPTOR
         src/gui/gui.hpp
         src/gui/internal/ellipseShape.hpp
         src/lib/utf/utf.hpp
-        src/core/unicode.hpp
-        src/gui/core/patterns/PatternTextInfo.hpp)
+        )
 set(SRC_VIDEO_RAPTOR
         src/alignment/alignment.cpp
         src/alignment/alignment.hpp
@@ -47,7 +50,8 @@ set(SRC_VIDEO_RAPTOR
         src/lib/lodepng/lodepng.h
         src/lib/utf/utf.hpp
         src/video/videoRaptor.cpp
-        src/video/videoRaptor.hpp)
+        src/video/videoRaptor.hpp
+        )
 set(TEST_GUI_RAPTOR
         other/test/gui/src/test.cpp
         other/test/gui/src/_wrappers.hpp)
@@ -63,16 +67,6 @@ set_target_properties(guiRaptor PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(guiRaptor PROPERTIES SOVERSION 1)
 install(TARGETS guiRaptor LIBRARY DESTINATION $ENV{BIN_PATH})
 
-add_executable(testGui ${SRC_GUI_RAPTOR} ${TEST_GUI_RAPTOR})
-target_link_libraries(testGui sfml-graphics sfml-window sfml-system)
-
-add_executable(hwaccel ${TEST_HARDWARE_ACCELERATION})
-target_link_libraries(hwaccel avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
-
-add_executable(testVideoRaptor ${TEST_VIDEO_RAPTOR} ${SRC_VIDEO_RAPTOR})
-target_link_libraries(testVideoRaptor avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
-
-
 add_library(videoRaptorBatch MODULE ${SRC_VIDEO_RAPTOR})
 target_link_libraries(videoRaptorBatch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 set_target_properties(videoRaptorBatch PROPERTIES PREFIX "")
@@ -80,3 +74,11 @@ set_target_properties(videoRaptorBatch PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(videoRaptorBatch PROPERTIES SOVERSION 1)
 install(TARGETS videoRaptorBatch LIBRARY DESTINATION $ENV{BIN_PATH})
 
+add_executable(hwaccel ${TEST_HARDWARE_ACCELERATION})
+target_link_libraries(hwaccel avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+
+add_executable(testGui ${SRC_GUI_RAPTOR} ${TEST_GUI_RAPTOR})
+target_link_libraries(testGui sfml-graphics sfml-window sfml-system -static-libgcc -static-libstdc++)
+
+add_executable(testVideoRaptor ${TEST_VIDEO_RAPTOR} ${SRC_VIDEO_RAPTOR})
+target_link_libraries(testVideoRaptor avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
