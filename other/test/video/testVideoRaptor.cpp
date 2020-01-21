@@ -5,6 +5,7 @@
 
 void printDetails(VideoInfo* videoDetails) {
 	std::cout << "VIDEO" << std::endl;
+	std::cout << "\tdevice            : " << (videoDetails->device_name ? videoDetails->device_name : "(none)") << std::endl;
 	if (videoDetails->filename)
 		std::cout << "\tfilename          : " << videoDetails->filename << std::endl;
 	if (videoDetails->title)

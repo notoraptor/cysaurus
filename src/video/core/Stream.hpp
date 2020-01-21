@@ -52,6 +52,7 @@ struct AudioStream: public Stream {
 struct VideoStream: public Stream {
 	const AVCodecHWConfig* selectedConfig;
 	VideoReport* report;
+	const char* deviceName;
 
 private:
 	bool loadHardwareDeviceConfig(AVHWDeviceType deviceType) {
@@ -62,6 +63,7 @@ private:
 			}
 			if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX && config->device_type == deviceType) {
 				selectedConfig = config;
+				deviceName = av_hwdevice_get_type_name(deviceType);
 				return true;
 			}
 		}
@@ -98,7 +100,7 @@ private:
 
 public:
 
-	explicit VideoStream(VideoReport* videoReport): Stream(), selectedConfig(nullptr), report(videoReport) {}
+	explicit VideoStream(VideoReport* videoReport): Stream(), selectedConfig(nullptr), report(videoReport), deviceName(nullptr) {}
 
 	bool load(AVFormatContext* format, HWDevices& devices, size_t deviceIndex) {
 		if ((index = av_find_best_stream(format, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)) < 0)

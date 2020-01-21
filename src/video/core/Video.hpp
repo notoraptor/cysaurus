@@ -228,6 +228,8 @@ public:
 		if (AVDictionaryEntry* tag = av_dict_get(format->metadata, "title", NULL, AV_DICT_IGNORE_SUFFIX))
 			videoDetails->title = copyString(tag->value);
 		VideoReport_setDone(&videoDetails->report, true);
+		if (videoStream.deviceName)
+			videoDetails->device_name = copyString(videoStream.deviceName);
 	}
 };
 

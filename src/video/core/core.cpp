@@ -133,6 +133,7 @@ void VideoInfo_init(VideoInfo* videoInfo, const char* filename) {
 	videoInfo->size = 0;
 	videoInfo->audio_bit_rate = 0;
 	VideoReport_init(&videoInfo->report);
+	videoInfo->device_name = nullptr;
 }
 
 void VideoInfo_clear(VideoInfo* videoInfo) {
@@ -144,4 +145,5 @@ void VideoInfo_clear(VideoInfo* videoInfo) {
 	delete[] videoInfo->video_codec;
 	delete[] videoInfo->audio_codec_description;
 	delete[] videoInfo->video_codec_description;
+	delete[] videoInfo->device_name;
 }

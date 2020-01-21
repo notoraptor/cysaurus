@@ -29,6 +29,7 @@ struct VideoInfo {
 	int64_t audio_bit_rate;
 	VideoReport report;
 	// Use VideoReport_isDone(&videoInfo.report) to check if info was correctly collected.
+	const char* device_name;
 };
 
 extern "C" {
