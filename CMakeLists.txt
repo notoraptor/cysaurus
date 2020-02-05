@@ -59,6 +59,9 @@ set(TEST_HARDWARE_ACCELERATION
         other/test/hardware_acceleration/hwaccel.c)
 set(TEST_VIDEO_RAPTOR
         other/test/video/testVideoRaptor.cpp)
+set(SRC_BATCH
+        other/test/video/batch.cpp
+        )
 
 add_library(guiRaptor MODULE ${SRC_GUI_RAPTOR})
 target_link_libraries(guiRaptor sfml-graphics sfml-window sfml-system)
@@ -82,3 +85,6 @@ target_link_libraries(testGui sfml-graphics sfml-window sfml-system -static-libg
 
 add_executable(testVideoRaptor ${TEST_VIDEO_RAPTOR} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(testVideoRaptor avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+
+add_executable(batch ${SRC_BATCH} ${SRC_VIDEO_RAPTOR})
+target_link_libraries(batch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)

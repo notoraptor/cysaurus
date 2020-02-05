@@ -11,6 +11,7 @@ extern "C" {
 #include <unordered_map>
 #include <vector>
 #include <ostream>
+#include <iostream>
 
 struct HWDevices {
 	std::vector<AVHWDeviceType> available;
@@ -20,7 +21,10 @@ struct HWDevices {
 	explicit HWDevices(): available(), loaded(), indexUsed(0) {
 		AVHWDeviceType type = AV_HWDEVICE_TYPE_NONE;
 		while ((type = av_hwdevice_iterate_types(type)) != AV_HWDEVICE_TYPE_NONE) {
-			available.push_back(type);
+			// I don't yet know why, but, if CUDA device is tested at a point and fails,
+			// then all next hardware acceleration devices initializations will fail. So I will ignore CUDA device.
+			if (type != AV_HWDEVICE_TYPE_CUDA)
+				available.push_back(type);
 		}
 	}
 
