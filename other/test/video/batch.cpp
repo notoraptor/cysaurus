@@ -10,19 +10,15 @@
 #define BATCH_SIZE 250
 #define LIMIT 0
 
-int runBatch(const std::vector<std::string>& batch, size_t id) {
+int runBatch(const std::vector<std::string>& batch, size_t id, std::vector<VideoInfo*>& pointers) {
 	int countLoaded = 0;
 	if (batch.empty())
 		return countLoaded;
-	std::vector<VideoInfo> infoData(batch.size());
-	std::vector<VideoInfo*> pointers(batch.size());
-	for (size_t i = 0; i < batch.size(); ++i) {
-		VideoInfo_init(&infoData[i], batch[i].c_str());
-		pointers[i] = &infoData[i];
-	}
+	for (size_t i = 0; i < batch.size(); ++i)
+		VideoInfo_init(pointers[i], batch[i].c_str());
 	countLoaded = videoRaptorDetails(pointers.size(), pointers.data());
-	for (VideoInfo* pointer: pointers)
-		VideoInfo_clear(pointer);
+	for (size_t i = 0; i < batch.size(); ++i)
+	    VideoInfo_clear(pointers[i]);
 	std::cout << "[" << id << "] Running " << batch.size() << " file(s)." << std::endl;
 	return countLoaded;
 }
@@ -35,6 +31,12 @@ int main(int nargs, char** args) {
 	size_t count = 0;
 	size_t countLoaded = 0;
 	std::string line;
+
+    std::vector<VideoInfo> infoData(BATCH_SIZE);
+    std::vector<VideoInfo*> pointers(BATCH_SIZE);
+    for (size_t i = 0; i < BATCH_SIZE; ++i)
+        pointers[i] = &infoData[i];
+
 	std::vector<std::string> batch;
 	std::ifstream listFile{args[1]};
 	if (!listFile.is_open()) {
@@ -50,11 +52,11 @@ int main(int nargs, char** args) {
 		if (LIMIT && count == LIMIT)
 			break;
 		if (batch.size() == BATCH_SIZE) {
-			countLoaded += runBatch(batch, count);
+			countLoaded += runBatch(batch, count, pointers);
 			batch.clear();
 		}
 	}
-	countLoaded += runBatch(batch, count);
+	countLoaded += runBatch(batch, count, pointers);
 	std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 	listFile.close();
 	std::chrono::duration<size_t, std::micro> timeSpent = std::chrono::duration_cast<std::chrono::duration<size_t, std::micro>>(t2 - t1);
