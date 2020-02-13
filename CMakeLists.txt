@@ -31,6 +31,12 @@ set(SRC_GUI_RAPTOR
 set(SRC_VIDEO_RAPTOR
         src/alignment/alignment.cpp
         src/alignment/alignment.hpp
+        src/core/unicode.hpp
+        src/lib/cjson/cJSON.c
+        src/lib/cjson/cJSON.h
+        src/lib/lodepng/lodepng.cpp
+        src/lib/lodepng/lodepng.h
+        src/lib/utf/utf.hpp
         src/video/core/compatWindows.hpp
         src/video/core/core.cpp
         src/video/core/errorCodes.hpp
@@ -39,16 +45,12 @@ set(SRC_VIDEO_RAPTOR
         src/video/core/HWDevices.hpp
         src/video/core/Stream.hpp
         src/video/core/ThumbnailContext.hpp
-        src/core/unicode.hpp
         src/video/core/utils.hpp
         src/video/core/Video.hpp
         src/video/core/VideoInfo.hpp
         src/video/core/VideoRaptorInfo.hpp
         src/video/core/VideoReport.hpp
         src/video/core/VideoThumbnail.hpp
-        src/lib/lodepng/lodepng.cpp
-        src/lib/lodepng/lodepng.h
-        src/lib/utf/utf.hpp
         src/video/videoRaptor.cpp
         src/video/videoRaptor.hpp
         )
@@ -60,8 +62,11 @@ set(TEST_HARDWARE_ACCELERATION
 set(TEST_VIDEO_RAPTOR
         other/test/video/testVideoRaptor.cpp)
 set(SRC_BATCH
-        other/test/video/batch.cpp
-        )
+        other/test/video/batch.cpp)
+set(SRC_JSON
+        src/lib/cjson/cJSON.h
+        src/lib/cjson/cJSON.c
+        other/test/general/testJSON.cpp)
 
 add_library(guiRaptor MODULE ${SRC_GUI_RAPTOR})
 target_link_libraries(guiRaptor sfml-graphics sfml-window sfml-system)
@@ -77,14 +82,16 @@ set_target_properties(videoRaptorBatch PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(videoRaptorBatch PROPERTIES SOVERSION 1)
 install(TARGETS videoRaptorBatch LIBRARY DESTINATION $ENV{BIN_PATH})
 
-add_executable(hwaccel ${TEST_HARDWARE_ACCELERATION})
-target_link_libraries(hwaccel avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
-
 add_executable(testGui ${SRC_GUI_RAPTOR} ${TEST_GUI_RAPTOR})
 target_link_libraries(testGui sfml-graphics sfml-window sfml-system -static-libgcc -static-libstdc++)
+
+add_executable(hwaccel ${TEST_HARDWARE_ACCELERATION})
+target_link_libraries(hwaccel avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 
 add_executable(testVideoRaptor ${TEST_VIDEO_RAPTOR} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(testVideoRaptor avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 
 add_executable(batch ${SRC_BATCH} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(batch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+
+add_executable(testJSON ${SRC_JSON})

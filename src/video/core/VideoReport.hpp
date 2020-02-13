@@ -6,6 +6,7 @@
 #define VIDEORAPTOR_VIDEOREPORT_HPP
 
 #include <cstdio>
+#include <cstring>
 #include "errorCodes.hpp"
 #include "ErrorReader.hpp"
 
@@ -24,7 +25,7 @@ inline void VideoReport_init(VideoReport* report) {
 inline bool VideoReport_error(VideoReport* report, unsigned int errorCode, const char* errorDetail = nullptr) {
 	report->errors |= errorCode;
 	if (errorDetail)
-		snprintf(report->errorDetail, ERROR_DETAIL_MAX_LENGTH, errorDetail);
+		snprintf(report->errorDetail, ERROR_DETAIL_MAX_LENGTH, "%s", errorDetail);
 	return false;
 }
 

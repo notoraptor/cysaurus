@@ -5,3 +5,7 @@
 # utf
 
 - https://github.com/jalfd/utf.hpp
+
+# cJSON
+
+- https://github.com/DaveGamble/cJSON

@@ -9,11 +9,15 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
 };
+
+#include <ostream>
+#include <cstring>
 #include <cstdio>
 #include <sys/stat.h>
 #include <lib/lodepng/lodepng.h>
-#include "utils.hpp"
+#include <lib/cjson/cJSON.h>
 #include <core/unicode.hpp>
+#include "utils.hpp"
 #include "Stream.hpp"
 #include "ThumbnailContext.hpp"
 #include "VideoInfo.hpp"
@@ -24,6 +28,24 @@ extern "C" {
 #endif
 
 #define THUMBNAIL_SIZE 300
+
+#define META_TITLE "n"
+#define CONTAINER_FORMAT "c"
+#define AUDIO_CODEC "a"
+#define VIDEO_CODEC "v"
+#define AUDIO_CODEC_DESCRIPTION "A"
+#define VIDEO_CODEC_DESCRIPTION "V"
+#define WIDTH "w"
+#define HEIGHT "h"
+#define FRAME_RATE_NUM "x"
+#define FRAME_RATE_DEN "y"
+#define SAMPLE_RATE "u"
+#define DURATION "d"
+#define DURATION_TIME_BASE "t"
+#define AUDIO_BIT_RATE "r"
+#define DEVICE_NAME "b"
+#define FILE_SIZE "s"
+#define FILE_NAME "f"
 
 class Video {
 	FileHandle fileHandle;
@@ -230,6 +252,43 @@ public:
 		VideoReport_setDone(&videoDetails->report, true);
 		if (videoStream.deviceName)
 			videoDetails->device_name = copyString(videoStream.deviceName);
+	}
+
+	bool json(std::ostream& output) {
+		AVRational* frame_rate = &videoStream.stream->avg_frame_rate;
+		if (!frame_rate->den)
+			frame_rate = &videoStream.stream->r_frame_rate;
+
+		auto object = cJSON_CreateObject();
+		cJSON_AddNumberToObject(object, DURATION, format->duration);
+		cJSON_AddNumberToObject(object, DURATION_TIME_BASE, AV_TIME_BASE);
+		cJSON_AddNumberToObject(object, FILE_SIZE, avio_size(format->pb));
+		cJSON_AddNumberToObject(object, WIDTH, videoStream.codecContext->width);
+		cJSON_AddNumberToObject(object, HEIGHT, videoStream.codecContext->height);
+		cJSON_AddNumberToObject(object, FRAME_RATE_NUM, frame_rate->num);
+		cJSON_AddNumberToObject(object, FRAME_RATE_DEN, frame_rate->den);
+		cJSON_AddStringToObject(object, FILE_NAME, fileHandle.filename);
+		cJSON_AddStringToObject(object, CONTAINER_FORMAT, format->iformat->long_name);
+		cJSON_AddStringToObject(object, VIDEO_CODEC, videoStream.codec->name);
+		cJSON_AddStringToObject(object, VIDEO_CODEC_DESCRIPTION, videoStream.codec->long_name);
+		if (audioStream.index >= 0) {
+			cJSON_AddNumberToObject(object, SAMPLE_RATE, audioStream.codecContext->sample_rate);
+			cJSON_AddNumberToObject(object, AUDIO_BIT_RATE, audioStream.codecContext->bit_rate);
+			cJSON_AddStringToObject(object, AUDIO_CODEC, audioStream.codec->name);
+			cJSON_AddStringToObject(object, AUDIO_CODEC_DESCRIPTION, audioStream.codec->long_name);
+		}
+		if (AVDictionaryEntry* tag = av_dict_get(format->metadata, "title", NULL, AV_DICT_IGNORE_SUFFIX))
+			cJSON_AddStringToObject(object, META_TITLE, tag->value);
+		if (videoStream.deviceName)
+			cJSON_AddStringToObject(object, DEVICE_NAME, videoStream.deviceName);
+
+		auto jsonString = cJSON_PrintUnformatted(object);
+		output.write(jsonString, strlen(jsonString));
+
+		delete[] jsonString;
+		cJSON_Delete(object);
+
+		return true;
 	}
 };
 

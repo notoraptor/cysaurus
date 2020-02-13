@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 #include "core/Video.hpp"
 #include "core/errorCodes.hpp"
 #include "videoRaptor.hpp"
@@ -17,6 +18,10 @@ typedef bool (* VideoWorkerFunction)(Video* video, void* context);
 bool videoWorkerForInfo(Video* video, void* context) {
 	video->extractInfo((VideoInfo*) context);
 	return true;
+}
+
+bool videoWorkerForJSON(Video* video, void* context) {
+	return video->json(*(std::ostream*)context);
 }
 
 bool videoWorkerForThumbnail(Video* video, void* context) {
@@ -92,3 +97,26 @@ int videoRaptorDetails(int length, VideoInfo** pVideoInfo) {
 	return countLoaded;
 }
 
+int videoRaptorJSON(int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename) {
+	if (length <= 0 || !videoFilenames || !videoReports || !outputFilename)
+		return 0;
+	std::ofstream outputFile(outputFilename, std::ios::app);
+	if (!outputFile.is_open())
+		return 0;
+	HWDevices* devices = getHardwareDevices();
+	int countLoaded = 0;
+	for (int i = 0; i < length; ++i) {
+		const char* videoFilename = videoFilenames[i];
+		VideoReport* videoReport = videoReports[i];
+		if (videoFilename
+			&& videoReport
+			&& workOnVideo(*devices, videoFilename, videoReport, &outputFile, videoWorkerForJSON)) {
+			++countLoaded;
+			VideoReport_setDone(videoReport, true);
+			outputFile.put('\r');
+			outputFile.put('\n');
+		}
+	}
+	outputFile.close();
+	return countLoaded;
+}

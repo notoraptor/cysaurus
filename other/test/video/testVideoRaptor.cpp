@@ -59,6 +59,23 @@ bool testDetails(const char* filename) {
 	return returnValue;
 }
 
+bool testJSON(const char* filename) {
+	bool returnValue = false;
+	VideoReport videoReport;
+	VideoReport* pVideoReport = &videoReport;
+	videoRaptorJSON(1, &filename, &pVideoReport, "out.log");
+	if (VideoReport_isDone(pVideoReport)) {
+		returnValue = true;
+	} else {
+		std::cout << "No details." << std::endl;
+	}
+	if (VideoReport_hasError(pVideoReport)) {
+		std::cout << "Video details: error(s) occurred (" << videoReport.errors << ")." << std::endl;
+		VideoReport_print(pVideoReport);
+	}
+	return returnValue;
+}
+
 bool testThumbnail(const char* filename, const char* thumbName) {
 	bool returnValue = false;
 	VideoThumbnail videoThumbnail;
@@ -79,7 +96,7 @@ bool testThumbnail(const char* filename, const char* thumbName) {
 }
 
 void test(const char* filename, const char* thumbName) {
-	if (testDetails(filename))
+	if (testJSON(filename))
 		testThumbnail(filename, thumbName);
 }
 

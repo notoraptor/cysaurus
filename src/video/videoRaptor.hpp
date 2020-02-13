@@ -11,6 +11,7 @@
 extern "C" {
 	int videoRaptorDetails(int length, VideoInfo** pVideoInfo);
 	int videoRaptorThumbnails(int length, VideoThumbnail** pVideoThumbnail);
+	int videoRaptorJSON(int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename);
 };
 
 
