@@ -7,6 +7,7 @@ project(cysaurus VERSION 0.0.1 DESCRIPTION "C/C++ utilities with a C interface f
 include_directories(src)
 include_directories($ENV{CPATH})
 link_directories($ENV{LIBRARY_PATH})
+add_compile_definitions(CJSON_HIDE_SYMBOLS)
 
 set(SRC_GUI_RAPTOR
         src/core/unicode.hpp
