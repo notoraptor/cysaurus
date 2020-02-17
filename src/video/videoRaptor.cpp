@@ -12,6 +12,7 @@
 #include "core/Video.hpp"
 #include "core/errorCodes.hpp"
 #include "videoRaptor.hpp"
+#include "core/VideoRaptorContext.hpp"
 
 typedef bool (* VideoWorkerFunction)(Video* video, void* context);
 
@@ -64,10 +65,10 @@ bool workOnVideo(HWDevices& devices, const char* videoFilename, VideoReport* vid
 	return videoWorkerFunction(&video, videoContext);
 }
 
-int videoRaptorThumbnails(int length, VideoThumbnail** pVideoThumbnail) {
-	if (length <= 0 || !pVideoThumbnail)
+int videoRaptorThumbnails(void* context, int length, VideoThumbnail** pVideoThumbnail) {
+	if (!context || length <= 0 || !pVideoThumbnail)
 		return 0;
-	HWDevices* devices = getHardwareDevices();
+	HWDevices* devices = ((VideoRaptorContext*)context)->devices();
 	int countLoaded = 0;
 	for (int i = 0; i < length; ++i) {
 		VideoThumbnail* videoThumbnail = pVideoThumbnail[i];
@@ -82,10 +83,10 @@ int videoRaptorThumbnails(int length, VideoThumbnail** pVideoThumbnail) {
 	return countLoaded;
 }
 
-int videoRaptorDetails(int length, VideoInfo** pVideoInfo) {
-	if (length <= 0 || !pVideoInfo)
+int videoRaptorDetails(void* context, int length, VideoInfo** pVideoInfo) {
+	if (!context || length <= 0 || !pVideoInfo)
 		return 0;
-	HWDevices* devices = getHardwareDevices();
+	HWDevices* devices = ((VideoRaptorContext*)context)->devices();
 	int countLoaded = 0;
 	for (int i = 0; i < length; ++i) {
 		VideoInfo* videoDetails = pVideoInfo[i];
@@ -97,13 +98,13 @@ int videoRaptorDetails(int length, VideoInfo** pVideoInfo) {
 	return countLoaded;
 }
 
-int videoRaptorJSON(int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename) {
-	if (length <= 0 || !videoFilenames || !videoReports || !outputFilename)
+int videoRaptorJSON(void* context, int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename) {
+	if (!context || length <= 0 || !videoFilenames || !videoReports || !outputFilename)
 		return 0;
 	std::ofstream outputFile(outputFilename, std::ios::app);
 	if (!outputFile.is_open())
 		return 0;
-	HWDevices* devices = getHardwareDevices();
+	HWDevices* devices = ((VideoRaptorContext*)context)->devices();
 	int countLoaded = 0;
 	for (int i = 0; i < length; ++i) {
 		const char* videoFilename = videoFilenames[i];
@@ -119,4 +120,38 @@ int videoRaptorJSON(int length, const char** videoFilenames, VideoReport** video
 	}
 	outputFile.close();
 	return countLoaded;
+}
+
+bool errorsToJSON(const char* filename, VideoReport& report, std::ostream& output) {
+	if (!report.errors)
+		return false;
+	auto flags = report.errors;
+	if (flags & SUCCESS_DONE)
+		flags ^= SUCCESS_DONE;
+	if (!flags)
+		return false;
+	auto object = cJSON_CreateObject();
+	auto array = cJSON_AddArrayToObject(object, ERRORS);
+	cJSON_AddStringToObject(object, FILE_NAME, filename);
+	ErrorReader reader{};
+	ErrorReader_init(&reader, flags);
+	while (const char* errorString = ErrorReader_next(&reader)) {
+		auto str = cJSON_CreateString(errorString);
+		cJSON_AddItemToArray(array, str);
+	}
+	auto jsonString = cJSON_PrintUnformatted(object);
+	output.write(jsonString, strlen(jsonString));
+	delete[] jsonString;
+	cJSON_Delete(object);
+	return true;
+}
+
+int videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output) {
+	bool ok = true;
+	if (!filename || !workOnVideo(*context.devices(), filename, &report, &output, videoWorkerForJSON)) {
+		ok = false;
+		errorsToJSON(filename, report, output);
+	}
+	output.put('\n');
+	return ok;
 }

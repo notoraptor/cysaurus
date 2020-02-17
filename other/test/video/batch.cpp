@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <video/videoRaptor.hpp>
+#include <video/core/VideoRaptorContext.hpp>
 #include <ctime>
 #include <ratio>
 #include <chrono>
@@ -10,13 +11,13 @@
 #define BATCH_SIZE 250
 #define LIMIT 0
 
-int runBatch(const std::vector<std::string>& batch, size_t id, std::vector<VideoInfo*>& pointers) {
+int runBatch(VideoRaptorContext& context, const std::vector<std::string>& batch, size_t id, std::vector<VideoInfo*>& pointers) {
 	int countLoaded = 0;
 	if (batch.empty())
 		return countLoaded;
 	for (size_t i = 0; i < batch.size(); ++i)
 		VideoInfo_init(pointers[i], batch[i].c_str());
-	countLoaded = videoRaptorDetails(pointers.size(), pointers.data());
+	countLoaded = videoRaptorDetails(&context, pointers.size(), pointers.data());
 	for (size_t i = 0; i < batch.size(); ++i)
 	    VideoInfo_clear(pointers[i]);
 	std::cout << "[" << id << "] Running " << batch.size() << " file(s)." << std::endl;
@@ -28,6 +29,9 @@ int main(int nargs, char** args) {
 		std::cerr << "No input file name given." << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	VideoRaptorContext context;
+
 	size_t count = 0;
 	size_t countLoaded = 0;
 	std::string line;
@@ -52,11 +56,11 @@ int main(int nargs, char** args) {
 		if (LIMIT && count == LIMIT)
 			break;
 		if (batch.size() == BATCH_SIZE) {
-			countLoaded += runBatch(batch, count, pointers);
+			countLoaded += runBatch(context, batch, count, pointers);
 			batch.clear();
 		}
 	}
-	countLoaded += runBatch(batch, count, pointers);
+	countLoaded += runBatch(context, batch, count, pointers);
 	std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 	listFile.close();
 	std::chrono::duration<size_t, std::micro> timeSpent = std::chrono::duration_cast<std::chrono::duration<size_t, std::micro>>(t2 - t1);

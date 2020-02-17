@@ -26,6 +26,7 @@ struct HWDevices {
 			if (type != AV_HWDEVICE_TYPE_CUDA)
 				available.push_back(type);
 		}
+		std::cout << "# HWDevices initialized at " << this << std::endl;
 	}
 
 	~HWDevices() {

@@ -46,6 +46,7 @@ extern "C" {
 #define DEVICE_NAME "b"
 #define FILE_SIZE "s"
 #define FILE_NAME "f"
+#define ERRORS "e"
 
 class Video {
 	FileHandle fileHandle;
@@ -281,6 +282,22 @@ public:
 			cJSON_AddStringToObject(object, META_TITLE, tag->value);
 		if (videoStream.deviceName)
 			cJSON_AddStringToObject(object, DEVICE_NAME, videoStream.deviceName);
+		VideoReport_setDone(report, true);
+
+		if (report->errors) {
+			auto flags = report->errors;
+			if (flags & SUCCESS_DONE)
+				flags ^= SUCCESS_DONE;
+			if (flags) {
+				ErrorReader reader{};
+				ErrorReader_init(&reader, flags);
+				auto errors = cJSON_AddArrayToObject(object, ERRORS);
+				while (const char* errorString = ErrorReader_next(&reader)) {
+					auto str = cJSON_CreateString(errorString);
+					cJSON_AddItemToArray(errors, str);
+				}
+			}
+		}
 
 		auto jsonString = cJSON_PrintUnformatted(object);
 		output.write(jsonString, strlen(jsonString));

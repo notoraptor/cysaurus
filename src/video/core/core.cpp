@@ -7,8 +7,8 @@ extern "C" {
 #include "utils.hpp"
 #include "VideoInfo.hpp"
 #include "VideoThumbnail.hpp"
-#include "VideoRaptorInfo.hpp"
 #include "ErrorReader.hpp"
+#include "VideoRaptorContext.hpp"
 
 const char* errorCodeStrings[] = {
 		"SUCCESS_NOTHING",
@@ -71,29 +71,48 @@ const char* ErrorReader_next(ErrorReader* errorReader) {
 // Doing nothing (silent log).
 void customCallback(void* avClass, int level, const char* fmt, va_list vl) {}
 
+
 HWDevices* getHardwareDevices() {
 	static HWDevices devices;
 	static bool initialized = false;
 	if (!initialized) {
 		av_log_set_callback(customCallback);
 		initialized = true;
+		std::cout << "FFMPEG initialized: " << &initialized << std::endl;
 	}
 	return &devices;
 }
 
-void VideoRaptorInfo_init(VideoRaptorInfo* videoRaptorInfo) {
-	HWDevices* devices = getHardwareDevices();
-	videoRaptorInfo->hardwareDevicesCount = devices->countDeviceTypes();
-	videoRaptorInfo->hardwareDevicesNames = nullptr;
-	if (videoRaptorInfo->hardwareDevicesCount) {
+static int witness = 0;
+
+VideoRaptorContext::VideoRaptorContext(): hwDevices(), hwDevicesNames(nullptr) {
+	av_log_set_callback(customCallback);
+	if (hwDevices.countDeviceTypes()) {
 		const char* separator = ", ";
-		videoRaptorInfo->hardwareDevicesNames = new char[devices->getStringRepresentationLength(separator)];
-		devices->getStringRepresentation(videoRaptorInfo->hardwareDevicesNames, separator);
+		hwDevicesNames = new char[hwDevices.getStringRepresentationLength(separator)];
+		hwDevices.getStringRepresentation(hwDevicesNames, separator);
 	}
+	std::cout << "# Video raptor context initialized. Witness at " << &witness << std::endl;
+}
+VideoRaptorContext::~VideoRaptorContext() {
+	delete[] hwDevicesNames;
+}
+HWDevices* VideoRaptorContext::devices() {
+	return &hwDevices;
+}
+size_t VideoRaptorContext::nbDevices() const {
+	return hwDevices.countDeviceTypes();
+}
+const char* VideoRaptorContext::devicesNames() const {
+	return hwDevicesNames;
 }
 
-void VideoRaptorInfo_clear(VideoRaptorInfo* videoRaptorInfo) {
-	delete[] videoRaptorInfo->hardwareDevicesNames;
+void* VideoRaptorContext_New() {
+	return new VideoRaptorContext();
+}
+
+void VideoRaptorContext_Delete(void* context) {
+	delete ((VideoRaptorContext*)context);
 }
 
 bool VideoReport_isDone(VideoReport* report) {

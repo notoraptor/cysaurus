@@ -5,13 +5,16 @@
 #ifndef VIDEORAPTOR_VIDEORAPTORBATCH_HPP
 #define VIDEORAPTOR_VIDEORAPTORBATCH_HPP
 
+#include <video/core/VideoRaptorContext.hpp>
 #include "core/VideoInfo.hpp"
 #include "core/VideoThumbnail.hpp"
 
 extern "C" {
-	int videoRaptorDetails(int length, VideoInfo** pVideoInfo);
-	int videoRaptorThumbnails(int length, VideoThumbnail** pVideoThumbnail);
-	int videoRaptorJSON(int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename);
+	int videoRaptorDetails(void* context, int length, VideoInfo** pVideoInfo);
+	int videoRaptorThumbnails(void* context, int length, VideoThumbnail** pVideoThumbnail);
+	int videoRaptorJSON(void* context, int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename);
+
+	int videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output);
 };
 
 

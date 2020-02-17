@@ -1,7 +1,7 @@
 #include <sstream>
-#include <video/core/VideoRaptorInfo.hpp>
 #include <video/videoRaptor.hpp>
 #include <video/core/ErrorReader.hpp>
+#include <video/core/VideoRaptorContext.hpp>
 
 void printDetails(VideoInfo* videoDetails) {
 	std::cout << "VIDEO" << std::endl;
@@ -39,12 +39,12 @@ void printDetails(VideoInfo* videoDetails) {
 	}
 }
 
-bool testDetails(const char* filename) {
+bool testDetails(VideoRaptorContext& context, const char* filename) {
 	bool returnValue = false;
 	VideoInfo videoInfo;
 	VideoInfo_init(&videoInfo, filename);
 	VideoInfo* pVideoDetails = &videoInfo;
-	videoRaptorDetails(1, &pVideoDetails);
+	videoRaptorDetails(&context, 1, &pVideoDetails);
 	if (VideoReport_isDone(&videoInfo.report)) {
 		printDetails(&videoInfo);
 		returnValue = true;
@@ -59,11 +59,11 @@ bool testDetails(const char* filename) {
 	return returnValue;
 }
 
-bool testJSON(const char* filename) {
+bool testJSON(VideoRaptorContext& context, const char* filename) {
 	bool returnValue = false;
 	VideoReport videoReport;
 	VideoReport* pVideoReport = &videoReport;
-	videoRaptorJSON(1, &filename, &pVideoReport, "out.log");
+	videoRaptorJSON(&context, 1, &filename, &pVideoReport, "out.log");
 	if (VideoReport_isDone(pVideoReport)) {
 		returnValue = true;
 	} else {
@@ -76,12 +76,12 @@ bool testJSON(const char* filename) {
 	return returnValue;
 }
 
-bool testThumbnail(const char* filename, const char* thumbName) {
+bool testThumbnail(VideoRaptorContext& context, const char* filename, const char* thumbName) {
 	bool returnValue = false;
 	VideoThumbnail videoThumbnail;
 	VideoThumbnail_init(&videoThumbnail, filename, ".", thumbName);
 	VideoThumbnail* pVideoThumbnailInfo = &videoThumbnail;
-	videoRaptorThumbnails(1, &pVideoThumbnailInfo);
+	videoRaptorThumbnails(&context, 1, &pVideoThumbnailInfo);
 	if (VideoReport_isDone(&videoThumbnail.report)) {
 		std::cout << "Thumbnail created: " << thumbName << ".png" << std::endl;
 		returnValue = true;
@@ -95,9 +95,9 @@ bool testThumbnail(const char* filename, const char* thumbName) {
 	return returnValue;
 }
 
-void test(const char* filename, const char* thumbName) {
-	if (testJSON(filename))
-		testThumbnail(filename, thumbName);
+void test(VideoRaptorContext& context, const char* filename, const char* thumbName) {
+	if (testDetails(context, filename))
+		testThumbnail(context, filename, thumbName);
 }
 
 void testErrorPrinting() {
@@ -111,24 +111,19 @@ void testErrorPrinting() {
 	std::cout << "... Finished testing." << std::endl << std::endl;
 }
 
-void printVideoRaptorInfo() {
-	// Print info about available hardware acceleration.
-	VideoRaptorInfo videoRaptorInfo;
-	VideoRaptorInfo_init(&videoRaptorInfo);
-	std::cout << videoRaptorInfo.hardwareDevicesCount << " hardware device(s)";
-	if (videoRaptorInfo.hardwareDevicesCount)
-		std::cout << ": " << videoRaptorInfo.hardwareDevicesNames;
-	std::cout << '.' << std::endl << std::endl;
-	VideoRaptorInfo_clear(&videoRaptorInfo);
-}
-
 int main(int n, char* args[]) {
-	printVideoRaptorInfo();
+	VideoRaptorContext context;
+
+	std::cout << context.nbDevices() << " hardware device(s)";
+	if (context.nbDevices())
+		std::cout << ": " << context.devicesNames();
+	std::cout << '.' << std::endl << std::endl;
+
 	for (int i = 1; i < n; ++i) {
 		std::ostringstream oss;
 		oss << i;
 		auto thumbName = oss.str();
-		test(args[i], thumbName.c_str());
+		test(context, args[i], thumbName.c_str());
 	}
 	return EXIT_SUCCESS;
 }
