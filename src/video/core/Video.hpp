@@ -296,6 +296,10 @@ public:
 					auto str = cJSON_CreateString(errorString);
 					cJSON_AddItemToArray(errors, str);
 				}
+				if (report->errorDetail[0]) {
+					auto str = cJSON_CreateStringReference(report->errorDetail);
+					cJSON_AddItemToArray(errors, str);
+				}
 			}
 		}
 

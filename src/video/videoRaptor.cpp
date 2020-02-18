@@ -139,6 +139,10 @@ bool errorsToJSON(const char* filename, VideoReport& report, std::ostream& outpu
 		auto str = cJSON_CreateString(errorString);
 		cJSON_AddItemToArray(array, str);
 	}
+	if (report.errorDetail[0]) {
+		auto str = cJSON_CreateStringReference(report.errorDetail);
+		cJSON_AddItemToArray(array, str);
+	}
 	auto jsonString = cJSON_PrintUnformatted(object);
 	output.write(jsonString, strlen(jsonString));
 	delete[] jsonString;
