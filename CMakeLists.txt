@@ -33,6 +33,8 @@ set(SRC_VIDEO_RAPTOR
         src/alignment/alignment.cpp
         src/alignment/alignment.hpp
         src/core/unicode.hpp
+        src/core/printer.hpp
+        src/core/profile.hpp
         src/lib/cjson/cJSON.c
         src/lib/cjson/cJSON.h
         src/lib/lodepng/lodepng.cpp
@@ -65,6 +67,8 @@ set(SRC_BATCH
         other/test/video/batch.cpp)
 set(SRC_RUN_VIDEO_RAPTOR_BATCH
         other/app/runVideoRaptorBatch.cpp)
+set(SRC_RUN_VIDEO_RAPTOR_THUMBNAILS
+        other/app/runVideoRaptorThumbnails.cpp)
 set(SRC_JSON
         src/lib/cjson/cJSON.h
         src/lib/cjson/cJSON.c
@@ -101,3 +105,7 @@ add_executable(testJSON ${SRC_JSON})
 add_executable(runVideoRaptorBatch ${SRC_RUN_VIDEO_RAPTOR_BATCH} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(runVideoRaptorBatch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 install(TARGETS runVideoRaptorBatch DESTINATION $ENV{BIN_PATH})
+
+add_executable(runVideoRaptorThumbnails ${SRC_RUN_VIDEO_RAPTOR_THUMBNAILS} ${SRC_VIDEO_RAPTOR})
+target_link_libraries(runVideoRaptorThumbnails avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
+install(TARGETS runVideoRaptorThumbnails DESTINATION $ENV{BIN_PATH})

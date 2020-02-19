@@ -14,7 +14,8 @@ extern "C" {
 	int videoRaptorThumbnails(void* context, int length, VideoThumbnail** pVideoThumbnail);
 	int videoRaptorJSON(void* context, int length, const char** videoFilenames, VideoReport** videoReports, const char* outputFilename);
 
-	int videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output);
+	bool videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output);
+	bool videoThumbnailsToJSON(VideoRaptorContext& context, VideoThumbnail& videoThumbnail, std::ostream& output);
 };
 
 

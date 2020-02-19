@@ -150,12 +150,22 @@ bool errorsToJSON(const char* filename, VideoReport& report, std::ostream& outpu
 	return true;
 }
 
-int videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output) {
+bool videoDetailsToJSON(VideoRaptorContext& context, const char* filename, VideoReport& report, std::ostream& output) {
 	bool ok = true;
 	if (!filename || !workOnVideo(*context.devices(), filename, &report, &output, videoWorkerForJSON)) {
 		ok = false;
 		errorsToJSON(filename, report, output);
 	}
 	output.put('\n');
+	return ok;
+}
+
+bool videoThumbnailsToJSON(VideoRaptorContext& context, VideoThumbnail& videoThumbnail, std::ostream& output) {
+	bool ok = true;
+	if (!workOnVideo(*context.devices(), videoThumbnail.filename, &videoThumbnail.report, &videoThumbnail, videoWorkerForThumbnail)) {
+		ok = false;
+		errorsToJSON(videoThumbnail.filename, videoThumbnail.report, output);
+		output.put('\n');
+	}
 	return ok;
 }

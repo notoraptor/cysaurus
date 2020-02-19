@@ -7,7 +7,7 @@
 #include <ratio>
 #include <chrono>
 
-#define BATCH_SIZE 250
+#define BATCH_SIZE 50
 
 int main(int nargs, char** args) {
 	if (nargs != 3) {
@@ -21,14 +21,14 @@ int main(int nargs, char** args) {
 	std::ifstream listFile{args[1]};
 	std::ofstream outputFile(args[2]);
 	VideoRaptorContext context;
-	VideoReport report{};
+	VideoThumbnail videoThumbnail{};
 
 	if (!listFile.is_open()) {
 		std::cerr << "Cannot open input list file: " << args[1] << std::endl;
 		return EXIT_FAILURE;
 	}
 	if (!outputFile.is_open()) {
-		std::cout << "Cannot open output JSONL file: " << args[2] << std::endl;
+		std::cerr << "Cannot open output JSONL file: " << args[2] << std::endl;
 		return EXIT_FAILURE;
 	}
 
@@ -36,9 +36,19 @@ int main(int nargs, char** args) {
 	while (std::getline(listFile, line)) {
 		if (line.length() && line[0] != '#') {
 			++count;
-			countLoaded += videoDetailsToJSON(context, line.c_str(), report, outputFile);
+			auto posAfterFilename = line.find('\t');
+			auto posAfterFolder = line.find('\t', posAfterFilename + 1);
+			auto posAfterThumbname = line.find('\t', posAfterFolder + 1);
+			line[posAfterFilename] = '\0';
+			line[posAfterFolder] = '\0';
+			line[posAfterThumbname] = '\0';
+			const char* filename = &line[0];
+			const char* thumbFolder = &line[posAfterFilename + 1];
+			const char* thumbName = &line[posAfterFolder + 1];
+			VideoThumbnail_init(&videoThumbnail, filename, thumbFolder, thumbName);
+			countLoaded += videoThumbnailsToJSON(context, videoThumbnail, outputFile);
 		}
-		if (count % 250 == 0)
+		if (count % BATCH_SIZE == 0)
 			std::cout << count << std::endl;
 	}
 	std::chrono::steady_clock::time_point timeEnd = std::chrono::steady_clock::now();
