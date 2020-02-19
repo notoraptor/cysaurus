@@ -59,5 +59,6 @@ int main(int nargs, char** args) {
 	std::cout << "#loaded " << countLoaded << std::endl;
 	std::cout << "#microseconds " << totalMicroseconds << std::endl;
 	std::cout << "#profile " << profile(totalMicroseconds) << std::endl;
+	std::cout << "#end" << std::endl;
 	return EXIT_SUCCESS;
 }
