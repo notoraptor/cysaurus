@@ -7,7 +7,7 @@
 #include <ratio>
 #include <chrono>
 
-#define BATCH_SIZE 50
+#define BATCH_SIZE 10
 
 int main(int nargs, char** args) {
 	if (nargs != 3) {

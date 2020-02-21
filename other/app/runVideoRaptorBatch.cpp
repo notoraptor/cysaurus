@@ -7,7 +7,7 @@
 #include <ratio>
 #include <chrono>
 
-#define BATCH_SIZE 250
+#define BATCH_SIZE 10
 
 int main(int nargs, char** args) {
 	if (nargs != 3) {
@@ -38,7 +38,7 @@ int main(int nargs, char** args) {
 			++count;
 			countLoaded += videoDetailsToJSON(context, line.c_str(), report, outputFile);
 		}
-		if (count % 250 == 0)
+		if (count % BATCH_SIZE == 0)
 			std::cout << count << std::endl;
 	}
 	std::chrono::steady_clock::time_point timeEnd = std::chrono::steady_clock::now();
