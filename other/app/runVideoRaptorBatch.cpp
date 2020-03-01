@@ -32,9 +32,12 @@ int main(int nargs, char** args) {
 		return EXIT_FAILURE;
 	}
 
+	outputFile.put('[');
 	std::chrono::steady_clock::time_point timeStart = std::chrono::steady_clock::now();
 	while (std::getline(listFile, line)) {
 		if (line.length() && line[0] != '#') {
+			if (count)
+				outputFile.put(',');
 			++count;
 			countLoaded += videoDetailsToJSON(context, line.c_str(), report, outputFile);
 		}
@@ -42,6 +45,7 @@ int main(int nargs, char** args) {
 			std::cout << count << std::endl;
 	}
 	std::chrono::steady_clock::time_point timeEnd = std::chrono::steady_clock::now();
+	outputFile.put(']');
 
 	auto timeSpent = std::chrono::duration_cast<std::chrono::duration<size_t, std::micro>>(timeEnd - timeStart);
 	size_t totalMicroseconds = timeSpent.count();

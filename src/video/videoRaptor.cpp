@@ -156,7 +156,6 @@ bool videoDetailsToJSON(VideoRaptorContext& context, const char* filename, Video
 		ok = false;
 		errorsToJSON(filename, report, output);
 	}
-	output.put('\n');
 	return ok;
 }
 
@@ -165,7 +164,6 @@ bool videoThumbnailsToJSON(VideoRaptorContext& context, VideoThumbnail& videoThu
 	if (!workOnVideo(*context.devices(), videoThumbnail.filename, &videoThumbnail.report, &videoThumbnail, videoWorkerForThumbnail)) {
 		ok = false;
 		errorsToJSON(videoThumbnail.filename, videoThumbnail.report, output);
-		output.put('\n');
 	}
 	return ok;
 }

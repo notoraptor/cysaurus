@@ -32,6 +32,7 @@ int main(int nargs, char** args) {
 		return EXIT_FAILURE;
 	}
 
+	outputFile.put('[');
 	std::chrono::steady_clock::time_point timeStart = std::chrono::steady_clock::now();
 	while (std::getline(listFile, line)) {
 		if (line.length() && line[0] != '#') {
@@ -46,12 +47,16 @@ int main(int nargs, char** args) {
 			const char* thumbFolder = &line[posAfterFilename + 1];
 			const char* thumbName = &line[posAfterFolder + 1];
 			VideoThumbnail_init(&videoThumbnail, filename, thumbFolder, thumbName);
-			countLoaded += videoThumbnailsToJSON(context, videoThumbnail, outputFile);
+			bool ok = videoThumbnailsToJSON(context, videoThumbnail, outputFile);
+			if (!ok)
+				outputFile.put(',');
+			countLoaded += ok;
 		}
 		if (count % BATCH_SIZE == 0)
 			std::cout << count << std::endl;
 	}
 	std::chrono::steady_clock::time_point timeEnd = std::chrono::steady_clock::now();
+	outputFile.write("null]", 5);
 
 	auto timeSpent = std::chrono::duration_cast<std::chrono::duration<size_t, std::micro>>(timeEnd - timeStart);
 	size_t totalMicroseconds = timeSpent.count();
