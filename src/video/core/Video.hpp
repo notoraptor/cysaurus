@@ -256,6 +256,13 @@ public:
 	}
 
 	bool json(std::ostream& output) {
+		// Check if video is valid until end, ie. if we can seek to the end of video.
+		ThumbnailContext thCtx;
+		if (av_seek_frame(format, -1, format->duration - 1, AVSEEK_FLAG_BACKWARD) < 0)
+			return VideoReport_error(report, ERROR_SEEK_VIDEO);
+		if (thCtx.readFrame(format) < 0)
+			return VideoReport_error(report, ERROR_SEEK_VIDEO);
+
 		AVRational* frame_rate = &videoStream.stream->avg_frame_rate;
 		if (!frame_rate->den)
 			frame_rate = &videoStream.stream->r_frame_rate;
