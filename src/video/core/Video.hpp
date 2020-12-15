@@ -47,6 +47,7 @@ extern "C" {
 #define FILE_SIZE "s"
 #define FILE_NAME "f"
 #define ERRORS "e"
+#define AUDIO_CHANNELS "C"
 
 class Video {
 	FileHandle fileHandle;
@@ -261,7 +262,7 @@ public:
 		if (av_seek_frame(format, -1, format->duration - 1, AVSEEK_FLAG_BACKWARD) < 0)
 			return VideoReport_error(report, ERROR_SEEK_VIDEO);
 		if (thCtx.readFrame(format) < 0)
-			return VideoReport_error(report, ERROR_SEEK_VIDEO);
+			VideoReport_error(report, ERROR_SEEK_END_VIDEO);
 
 		AVRational* frame_rate = &videoStream.stream->avg_frame_rate;
 		if (!frame_rate->den)
@@ -280,6 +281,7 @@ public:
 		cJSON_AddStringToObject(object, VIDEO_CODEC, videoStream.codec->name);
 		cJSON_AddStringToObject(object, VIDEO_CODEC_DESCRIPTION, videoStream.codec->long_name);
 		if (audioStream.index >= 0) {
+			cJSON_AddNumberToObject(object, AUDIO_CHANNELS, audioStream.codecContext->channels);
 			cJSON_AddNumberToObject(object, SAMPLE_RATE, audioStream.codecContext->sample_rate);
 			cJSON_AddNumberToObject(object, AUDIO_BIT_RATE, audioStream.codecContext->bit_rate);
 			cJSON_AddStringToObject(object, AUDIO_CODEC, audioStream.codec->name);
