@@ -29,6 +29,7 @@ void printDetails(VideoInfo* videoDetails) {
 	std::cout << "\tsize              : " << videoDetails->size << std::endl;
 	std::cout << "\tsample_rate       : " << videoDetails->sample_rate << std::endl;
 	std::cout << "\taudio_bit_rate    : " << videoDetails->audio_bit_rate << std::endl;
+	std::cout << "\tbit depth         : " << videoDetails->bit_depth << std::endl;
 	if (videoDetails->report.errors && !VideoReport_isDone(&videoDetails->report)) {
 		ErrorReader errorReader{};
 		ErrorReader_init(&errorReader, videoDetails->report.errors);

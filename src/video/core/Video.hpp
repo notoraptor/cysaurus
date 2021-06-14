@@ -48,6 +48,7 @@ extern "C" {
 #define FILE_NAME "f"
 #define ERRORS "e"
 #define AUDIO_CHANNELS "C"
+#define BIT_DEPTH "D"
 
 class Video {
 	FileHandle fileHandle;
@@ -229,6 +230,20 @@ public:
 		return VideoReport_error(report, ERROR_SAVE_THUMBNAIL);
 	}
 
+	int getBitDepth() {
+		int min = 0;
+		int max = 0;
+		const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(videoStream.codecContext->pix_fmt);
+		if (desc && desc->nb_components) {
+			min = max = desc->comp[0].depth;
+			for (int i = 1; i < desc->nb_components; ++i) {
+				min = std::min(desc->comp[i].depth, min);
+				max = std::max(desc->comp[i].depth, max);
+			}
+		}
+		return max;
+	}
+
 	void extractInfo(VideoInfo* videoDetails) {
 		AVRational* frame_rate = &videoStream.stream->avg_frame_rate;
 		if (!frame_rate->den)
@@ -243,6 +258,7 @@ public:
 		videoDetails->video_codec_description = copyString(videoStream.codec->long_name);
 		videoDetails->frame_rate_num = frame_rate->num;
 		videoDetails->frame_rate_den = frame_rate->den;
+		videoDetails->bit_depth = this->getBitDepth();
 		if (audioStream.index >= 0) {
 			videoDetails->audio_codec = copyString(audioStream.codec->name);
 			videoDetails->audio_codec_description = copyString(audioStream.codec->long_name);
@@ -251,9 +267,9 @@ public:
 		}
 		if (AVDictionaryEntry* tag = av_dict_get(format->metadata, "title", NULL, AV_DICT_IGNORE_SUFFIX))
 			videoDetails->title = copyString(tag->value);
-		VideoReport_setDone(&videoDetails->report, true);
 		if (videoStream.deviceName)
 			videoDetails->device_name = copyString(videoStream.deviceName);
+		VideoReport_setDone(&videoDetails->report, true);
 	}
 
 	bool json(std::ostream& output) {
@@ -276,6 +292,7 @@ public:
 		cJSON_AddNumberToObject(object, HEIGHT, videoStream.codecContext->height);
 		cJSON_AddNumberToObject(object, FRAME_RATE_NUM, frame_rate->num);
 		cJSON_AddNumberToObject(object, FRAME_RATE_DEN, frame_rate->den);
+		cJSON_AddNumberToObject(object, BIT_DEPTH, this->getBitDepth());
 		cJSON_AddStringToObject(object, FILE_NAME, fileHandle.filename);
 		cJSON_AddStringToObject(object, CONTAINER_FORMAT, format->iformat->long_name);
 		cJSON_AddStringToObject(object, VIDEO_CODEC, videoStream.codec->name);

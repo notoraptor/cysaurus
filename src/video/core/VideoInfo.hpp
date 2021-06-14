@@ -23,6 +23,7 @@ struct VideoInfo {
 	int frame_rate_num;
 	int frame_rate_den;
 	int sample_rate;
+	int bit_depth;
 	int64_t duration;
 	int64_t duration_time_base;
 	int64_t size;

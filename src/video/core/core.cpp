@@ -147,6 +147,7 @@ void VideoInfo_init(VideoInfo* videoInfo, const char* filename) {
 	videoInfo->frame_rate_num = 0;
 	videoInfo->frame_rate_den = 0;
 	videoInfo->sample_rate = 0;
+	videoInfo->bit_depth = 0;
 	videoInfo->duration = 0;
 	videoInfo->duration_time_base = 0;
 	videoInfo->size = 0;
