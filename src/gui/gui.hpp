@@ -13,12 +13,12 @@
 
 extern "C" {
 	// Window
-	Window* WindowNew(unsigned int width, unsigned int height, const char* title);
-	void WindowDelete(Window*);
-	bool WindowIsOpen(const Window*);
-	bool WindowNextEvent(Window*, Event*);
-	void WindowClose(Window*);
-	void WindowDraw(Window* window, Pattern** patterns, unsigned int length);
+	void* WindowNew(unsigned int width, unsigned int height, const char* title);
+	void WindowDelete(void*);
+	bool WindowIsOpen(const void*);
+	bool WindowNextEvent(void*, Event*);
+	void WindowClose(void*);
+	void WindowDraw(void* window, Pattern** patterns, unsigned int length);
 	// Event
 	Event* EventNew();
 	void EventDelete(Event*);

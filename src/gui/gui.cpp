@@ -6,24 +6,30 @@
 #include "gui.hpp"
 #include <iostream>
 
-Window* WindowNew(unsigned int width, unsigned int height, const char* title) {
-	return new Window(width, height, title);
+void* WindowNew(unsigned int width, unsigned int height, const char* title) {
+	auto* window = new Window;
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+	window->renderWindow.create(sf::VideoMode(width, height), title, sf::Style::Default, settings);
+	window->renderWindow.setVerticalSyncEnabled(true);
+	return window;
 }
 
-void WindowDelete(Window* window) {
-	delete window;
+void WindowDelete(void* window) {
+	delete (Window*)window;
 }
 
-bool WindowIsOpen(const Window* window) {
-	return window->get()->isOpen();
+bool WindowIsOpen(const void* window) {
+	return ((Window*)window)->renderWindow.isOpen();
 }
 
-bool WindowNextEvent(Window* window, Event* event) {
-	bool retval = window->get()->pollEvent(*event->get());
+bool WindowNextEvent(void* opaque, Event* event) {
+	auto* window = (Window*)opaque;
+	bool retval = window->renderWindow.pollEvent(*event->get());
 	// Automatic event processing.
 	switch (event->get()->type) {
 		case sf::Event::Resized:
-			window->get()->setView(sf::View(sf::FloatRect(
+			window->renderWindow.setView(sf::View(sf::FloatRect(
 					0, 0, event->get()->size.width, event->get()->size.height)));
 			break;
 		default:
@@ -32,21 +38,21 @@ bool WindowNextEvent(Window* window, Event* event) {
 	return retval;
 }
 
-void WindowClose(Window* window) {
-	window->get()->close();
+void WindowClose(void* window) {
+	((Window*)window)->renderWindow.close();
 }
 
-void WindowDraw(Window* window, Pattern** patterns, unsigned int length) {
+void WindowDraw(void* opaque, Pattern** patterns, unsigned int length) {
+	auto* window = (Window*)opaque;
 	if (!length)
 		return;
-	sf::RenderWindow* renderWindow = window->get();
-	renderWindow->clear(sf::Color::White);
+	window->renderWindow.clear(sf::Color::White);
 	for (unsigned int i = 0; i < length; ++i) {
 		if (patterns[i]) {
-			drawPattern(patterns[i], renderWindow);
+			drawPattern(patterns[i], &window->renderWindow);
 		}
 	}
-	renderWindow->display();
+	window->renderWindow.display();
 }
 
 Event* EventNew() {
