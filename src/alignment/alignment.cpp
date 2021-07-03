@@ -40,10 +40,10 @@ double batchAlignmentScore(const int* A, const int* B, int rows, int columns, in
 	return totalScore;
 }
 
-const int SIMPLE_MAX_PIXEL_DISTANCE = 255 * 3;
-const int V = SIMPLE_MAX_PIXEL_DISTANCE;
-const double B = V / 2.0;
-const double V_PLUS_B = V + B;
+constexpr int SIMPLE_MAX_PIXEL_DISTANCE = 255 * 3;
+constexpr int V = SIMPLE_MAX_PIXEL_DISTANCE;
+constexpr double B = V / 2.0;
+constexpr double V_PLUS_B = V + B;
 
 inline double moderate(double x) {
 	return V_PLUS_B * x / (x  + B);
@@ -92,7 +92,7 @@ inline T getMin(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
 	return val;
 }
 
-inline double compareFaster(const Sequence* p1, const Sequence* p2, int width, int height, int maximumSimilarityScore) {
+inline double compareFaster(const Sequence* p1, const Sequence* p2, int width, int height, int maximumDistanceScore) {
 	// x, y:
 	// 0, 0
 	double totalDistance = getMin(
@@ -172,17 +172,55 @@ inline double compareFaster(const Sequence* p1, const Sequence* p2, int width, i
 				PIXEL_DISTANCE(p1, x, y, p2, x, y + 1, width),
 				PIXEL_DISTANCE(p1, x, y, p2, x + 1, y + 1, width));
 	}
-	return (maximumSimilarityScore - totalDistance) / maximumSimilarityScore;
+	return (maximumDistanceScore - totalDistance) / maximumDistanceScore;
 }
 
 void classifySimilarities(
 		Sequence** sequences, int nbSequences, int iFrom, int iTo, int width, int height, double* edges) {
 	iTo = std::min(iTo, nbSequences);
-	int maximumSimilarityScore = SIMPLE_MAX_PIXEL_DISTANCE * width * height;
+	int maximumDistanceScore = SIMPLE_MAX_PIXEL_DISTANCE * width * height;
 	for (int i = iFrom; i < iTo; ++i) {
-		#pragma omp parallel for default(none) shared(sequences, i, nbSequences, width, height, maximumSimilarityScore, edges)
+		#pragma omp parallel for default(none) shared(sequences, i, nbSequences, width, height, maximumDistanceScore, edges)
 		for (int j = i + 1; j < nbSequences; ++j) {
-			edges[i * nbSequences + j] = compareFaster(sequences[i], sequences[j], width, height, maximumSimilarityScore);
+			edges[i * nbSequences + j] = compareFaster(sequences[i], sequences[j], width, height, maximumDistanceScore);
+		}
+	}
+}
+
+void classifySimilaritiesDirected(
+		Sequence** sequences, int nbSequences, int iFrom, int iTo, int width, int height, bool* edges, double limit) {
+	iTo = std::min(iTo, nbSequences);
+	int maximumDistanceScore = SIMPLE_MAX_PIXEL_DISTANCE * width * height;
+	for (int i = iFrom; i < iTo; ++i) {
+#pragma omp parallel for default(none) shared(sequences, i, nbSequences, width, height, maximumDistanceScore, edges, limit)
+		for (int j = i + 1; j < nbSequences; ++j) {
+			if (edges[i * nbSequences + j])
+				edges[i * nbSequences + j] = compareFaster(sequences[i], sequences[j], width, height, maximumDistanceScore) >= limit;
+		}
+	}
+}
+
+void classifySimilaritiesSelected(
+		Sequence** sequences, int nbSequences, int iFrom, int iTo, int width, int height, double limit, int* edges) {
+	iTo = std::min(iTo, nbSequences);
+	int maximumDistanceScore = SIMPLE_MAX_PIXEL_DISTANCE * width * height;
+	for (int i = iFrom; i < iTo; ++i) {
+		int nb = edges[i * nbSequences];
+#pragma omp parallel for default(none) shared(sequences, i, nb, nbSequences, width, height, maximumDistanceScore, limit, edges)
+		for (int j = 1; j < nb; ++j) {
+			int k = edges[i * nbSequences + j];
+			edges[i * nbSequences + j] *= compareFaster(sequences[i], sequences[k], width, height, maximumDistanceScore) >= limit;
+		}
+	}
+}
+
+void compareMatrix(Sequence** sequences, int nbRows, int nbCols, int width, int height, double* edges) {
+	int nbSequences = nbRows + nbCols;
+	int maximumDistanceScore = SIMPLE_MAX_PIXEL_DISTANCE * width * height;
+	for (int i = 0; i < nbRows; ++i) {
+		#pragma omp parallel for default(none) shared(sequences, i, nbRows, nbCols, nbSequences, width, height, maximumDistanceScore, edges)
+		for (int j = nbRows; j < nbSequences; ++j) {
+			edges[i * nbCols + j - nbRows] = compareFaster(sequences[i], sequences[j], width, height, maximumDistanceScore);
 		}
 	}
 }
