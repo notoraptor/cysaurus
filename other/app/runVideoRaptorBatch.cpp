@@ -19,7 +19,7 @@ int main(int nargs, char** args) {
 	size_t countLoaded = 0;
 	std::string line;
 	std::ifstream listFile{args[1]};
-	std::ofstream outputFile(args[2]);
+	std::ofstream outputFile(args[2], std::ios::out | std::ios::binary);
 	VideoRaptorContext context;
 	VideoReport report{};
 
