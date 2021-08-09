@@ -32,6 +32,10 @@ set(SRC_GUI_RAPTOR
 set(SRC_VIDEO_RAPTOR
         src/alignment/alignment.cpp
         src/alignment/alignment.hpp
+        src/alignment/alignmentCommon.cpp
+        src/alignment/alignmentCommon.hpp
+        src/alignment/alignmentOther.cpp
+        src/alignment/alignmentOther.hpp
         src/core/unicode.hpp
         src/core/printer.hpp
         src/core/profile.hpp
@@ -56,6 +60,11 @@ set(SRC_VIDEO_RAPTOR
         src/video/videoRaptor.cpp
         src/video/videoRaptor.hpp
         src/video/core/VideoRaptorContext.hpp)
+set(SRC_ALIGNMENT_RAPTOR
+        src/alignment/alignment.cpp
+        src/alignment/alignment.hpp
+        src/alignment/alignmentCommon.cpp
+        src/alignment/alignmentCommon.hpp)
 set(TEST_GUI_RAPTOR
         other/test/gui/src/test.cpp
         other/test/gui/src/_wrappers.hpp)
@@ -88,6 +97,14 @@ set_target_properties(videoRaptorBatch PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(videoRaptorBatch PROPERTIES SOVERSION 1)
 install(TARGETS videoRaptorBatch LIBRARY DESTINATION $ENV{BIN_PATH})
 
+# Currently useful
+add_library(alignmentRaptor MODULE ${SRC_ALIGNMENT_RAPTOR})
+target_link_libraries(alignmentRaptor -static-libgcc -static-libstdc++)
+set_target_properties(alignmentRaptor PROPERTIES PREFIX "")
+set_target_properties(alignmentRaptor PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(alignmentRaptor PROPERTIES SOVERSION 1)
+install(TARGETS alignmentRaptor LIBRARY DESTINATION $ENV{BIN_PATH})
+
 add_executable(testGui ${SRC_GUI_RAPTOR} ${TEST_GUI_RAPTOR})
 target_link_libraries(testGui sfml-graphics sfml-window sfml-system -static-libgcc -static-libstdc++)
 
@@ -102,10 +119,12 @@ target_link_libraries(batch avcodec avformat avutil swscale -static-libgcc -stat
 
 add_executable(testJSON ${SRC_JSON})
 
+# Currently useful
 add_executable(runVideoRaptorBatch ${SRC_RUN_VIDEO_RAPTOR_BATCH} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(runVideoRaptorBatch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 install(TARGETS runVideoRaptorBatch DESTINATION $ENV{BIN_PATH})
 
+# Currently useful
 add_executable(runVideoRaptorThumbnails ${SRC_RUN_VIDEO_RAPTOR_THUMBNAILS} ${SRC_VIDEO_RAPTOR})
 target_link_libraries(runVideoRaptorThumbnails avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 install(TARGETS runVideoRaptorThumbnails DESTINATION $ENV{BIN_PATH})
