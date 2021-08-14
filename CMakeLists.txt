@@ -88,14 +88,14 @@ target_link_libraries(guiRaptor sfml-graphics sfml-window sfml-system)
 set_target_properties(guiRaptor PROPERTIES PREFIX "")
 set_target_properties(guiRaptor PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(guiRaptor PROPERTIES SOVERSION 1)
-install(TARGETS guiRaptor LIBRARY DESTINATION $ENV{BIN_PATH})
+#install(TARGETS guiRaptor LIBRARY DESTINATION $ENV{BIN_PATH})
 
 add_library(videoRaptorBatch MODULE ${SRC_VIDEO_RAPTOR})
 target_link_libraries(videoRaptorBatch avcodec avformat avutil swscale -static-libgcc -static-libstdc++)
 set_target_properties(videoRaptorBatch PROPERTIES PREFIX "")
 set_target_properties(videoRaptorBatch PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(videoRaptorBatch PROPERTIES SOVERSION 1)
-install(TARGETS videoRaptorBatch LIBRARY DESTINATION $ENV{BIN_PATH})
+#install(TARGETS videoRaptorBatch LIBRARY DESTINATION $ENV{BIN_PATH})
 
 # Currently useful
 add_library(alignmentRaptor MODULE ${SRC_ALIGNMENT_RAPTOR})
