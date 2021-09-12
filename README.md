@@ -1,9 +1,23 @@
-# [backup] Library `videoRaptorBatch`
+# Cysaurus
 
-`md build`
+C++ utilities for Pysaurus.
 
-`cd build`
+- alignmentRaptor: library to find similar images
+- runVideoRaptorBatch: command-line tool to collect videos info
+- runVideoRaptorThumbnails: command-line tool to generate videos thumbnails
 
-`g++ -c ..\core\*.cpp ..\videoRaptorBatch\*.cpp ..\lib\lodepng\*.cpp  -I .. -I %CPATH% -L %LIBRARY_PATH% -lavcodec -lavformat -lavutil -lswscale -O3`
+Use cmake for compilation and installation.
 
-`g++ -shared -o videoRaptorBatch.dll *.o -fPIC -I .. -I %CPATH% -L %LIBRARY_PATH% -lavcodec -lavformat -lavutil -lswscale -O3`
+## NB
+
+There is currently a bunch of unused and not updated but still working code,
+including some code related to SFML library, as I intended to start developing
+a GUI framework, but this project is currently in hiatus (^^).
+
+However, current cmake config will try to compile anything, so SFML library is
+required for compilation.
+
+## Requirements
+
+- SFML library
+- FFMPEG libraries (avcodec, avformat, avutil, swscale)
