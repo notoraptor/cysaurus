@@ -49,6 +49,8 @@ extern "C" {
 #define ERRORS "e"
 #define AUDIO_CHANNELS "C"
 #define BIT_DEPTH "D"
+#define AUDIO_LANGUAGES "l"
+#define SUBTITLE_LANGUAGES "L"
 
 class Video {
 	FileHandle fileHandle;
@@ -309,6 +311,32 @@ public:
 		if (videoStream.deviceName)
 			cJSON_AddStringToObject(object, DEVICE_NAME, videoStream.deviceName);
 		VideoReport_setDone(report, true);
+
+		// Add audio and subtitle languages.
+		auto audioLanguages = cJSON_AddArrayToObject(object, AUDIO_LANGUAGES);
+		auto subttLanguages = cJSON_AddArrayToObject(object, SUBTITLE_LANGUAGES);
+		AVDictionaryEntry* lang;
+		for (unsigned int i = 0; i < format->nb_streams; ++i) {
+			auto* stream = format->streams[i];
+			switch (stream->codecpar->codec_type) {
+				case AVMEDIA_TYPE_AUDIO:
+					lang = av_dict_get(stream->metadata, "language", NULL, 0);
+					if (lang && lang->value) {
+						auto str = cJSON_CreateStringReference(lang->value);
+						cJSON_AddItemToArray(audioLanguages, str);
+					}
+					break;
+				case AVMEDIA_TYPE_SUBTITLE:
+					lang = av_dict_get(stream->metadata, "language", NULL, 0);
+					if (lang && lang->value) {
+						auto str = cJSON_CreateStringReference(lang->value);
+						cJSON_AddItemToArray(subttLanguages, str);
+					}
+					break;
+				default:
+					break;
+			}
+		}
 
 		if (report->errors) {
 			auto flags = report->errors;
