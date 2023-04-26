@@ -17,7 +17,7 @@ extern "C" {
 struct Stream {
 	int index;
 	AVStream* stream;
-	AVCodec* codec;
+	const AVCodec* codec;
 	AVCodecContext* codecContext;
 
 	explicit Stream(): index(-1), stream(nullptr), codec(nullptr), codecContext(nullptr) {}

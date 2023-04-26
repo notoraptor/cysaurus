@@ -20,6 +20,7 @@ void printDetails(VideoInfo* videoDetails) {
 		std::cout << "\taudio_codec       : " << videoDetails->audio_codec << std::endl;
 	if (videoDetails->audio_codec_description)
 		std::cout << "\taudio_codec_desc  : " << videoDetails->audio_codec_description << std::endl;
+	std::cout << "\taudio bits        : " << videoDetails->audio_bits << std::endl;
 	std::cout << "\twidth             : " << videoDetails->width << std::endl;
 	std::cout << "\theight            : " << videoDetails->height << std::endl;
 	std::cout << "\tframe_rate_num    : " << videoDetails->frame_rate_num << std::endl;

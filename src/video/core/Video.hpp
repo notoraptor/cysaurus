@@ -51,6 +51,7 @@ extern "C" {
 #define BIT_DEPTH "D"
 #define AUDIO_LANGUAGES "l"
 #define SUBTITLE_LANGUAGES "L"
+#define AUDIO_BITS "B"
 
 class Video {
 	FileHandle fileHandle;
@@ -266,6 +267,7 @@ public:
 			videoDetails->audio_codec_description = copyString(audioStream.codec->long_name);
 			videoDetails->sample_rate = audioStream.codecContext->sample_rate;
 			videoDetails->audio_bit_rate = audioStream.codecContext->bit_rate;
+			videoDetails->audio_bits = av_get_bytes_per_sample(audioStream.codecContext->sample_fmt) * 8;
 		}
 		if (AVDictionaryEntry* tag = av_dict_get(format->metadata, "title", NULL, AV_DICT_IGNORE_SUFFIX))
 			videoDetails->title = copyString(tag->value);
@@ -300,7 +302,8 @@ public:
 		cJSON_AddStringToObject(object, VIDEO_CODEC, videoStream.codec->name);
 		cJSON_AddStringToObject(object, VIDEO_CODEC_DESCRIPTION, videoStream.codec->long_name);
 		if (audioStream.index >= 0) {
-			cJSON_AddNumberToObject(object, AUDIO_CHANNELS, audioStream.codecContext->channels);
+			cJSON_AddNumberToObject(object, AUDIO_BITS, av_get_bytes_per_sample(audioStream.codecContext->sample_fmt) * 8);
+			cJSON_AddNumberToObject(object, AUDIO_CHANNELS, audioStream.codecContext->ch_layout.nb_channels);
 			cJSON_AddNumberToObject(object, SAMPLE_RATE, audioStream.codecContext->sample_rate);
 			cJSON_AddNumberToObject(object, AUDIO_BIT_RATE, audioStream.codecContext->bit_rate);
 			cJSON_AddStringToObject(object, AUDIO_CODEC, audioStream.codec->name);

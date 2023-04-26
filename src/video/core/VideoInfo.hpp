@@ -28,6 +28,7 @@ struct VideoInfo {
 	int64_t duration_time_base;
 	int64_t size;
 	int64_t audio_bit_rate;
+	int64_t audio_bits;
 	VideoReport report;
 	// Use VideoReport_isDone(&videoInfo.report) to check if info was correctly collected.
 	const char* device_name;

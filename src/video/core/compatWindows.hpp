@@ -107,7 +107,7 @@ inline bool openCustomFormatContext(FileHandle& fileHandle, AVFormatContext** fo
 	size_t n_bytes_read = 0;
 	uint8_t* avio_ctx_buffer = nullptr;
 	AVProbeData probeData;
-	AVInputFormat* inputFormat = nullptr;
+	const AVInputFormat* inputFormat = nullptr;
 	ProbeBuffer probeBuffer;
 	unsigned int asciiError = 0;
 
