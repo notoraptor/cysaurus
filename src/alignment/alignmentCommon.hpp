@@ -151,4 +151,6 @@ inline double compareFaster(const Sequence* p1, const Sequence* p2, int width, i
 	return (maximumDistanceScore - totalDistance) / maximumDistanceScore;
 }
 
+
+
 #endif //CYSAURUS_ALIGNMENTCOMMON_HPP

@@ -44,3 +44,6 @@ void classifySimilaritiesSelected(
 	}
 }
 
+double compareSimilarSequences(const Sequence* p1, const Sequence* p2, int width, int height, int maximumDistanceScore) {
+	return compareFaster(p1, p2, width, height, maximumDistanceScore);
+}
